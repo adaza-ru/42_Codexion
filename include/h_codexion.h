@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/07/14 00:05:06 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/07/14 17:43:49 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,7 @@
 #  define REFACTOR_CLR   ""
 #  define DEATH_CLR      ""
 # endif
+
+void	print_error(int n);
 
 #endif

@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/07/13 21:05:11 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/07/14 17:37:54 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ RM          = rm -rf
 SRCS_DIR    = src
 OBJS_DIR    = obj
 
-SRCS        = main.c
+SRCS        = main.c print_errors.c
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 

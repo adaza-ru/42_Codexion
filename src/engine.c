@@ -1,27 +1,13 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   engine.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/28 18:26:06 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/07/14 17:43:28 by adaza-ru         ###   ########.fr       */
+/*   Created: 2026/07/14 17:38:22 by adaza-ru          #+#    #+#             */
+/*   Updated: 2026/07/14 17:38:41 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_codexion.h"
-
-int	main(int argc, char **argv)
-{
-	int	error_mark;
-
-	(void) argv;
-	error_mark = 0;
-	if (argc != 9)
-	{
-		print_error(1);
-		return (1);
-	}
-	return (error_mark);
-}
