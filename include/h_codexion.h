@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/07/14 17:43:49 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/07/20 02:23:11 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,40 @@
 #  define DEATH_CLR      ""
 # endif
 
+typedef struct s_coder	t_coder;
+
+typedef struct s_env
+{
+	int				num_coders;
+	int				time_to_burnout;
+	int				time_to_compile;
+	int				time_to_debug;
+	int				time_to_refactor;
+	int				num_compiles_required;
+	int				dongle_cooldown;
+	int				scheduler;
+	int				heap_dongles[250];
+	int				queue[250];
+	int				queue_size;
+	int				simulation_end;
+	pthread_mutex_t	arbitrator_mutex;
+	pthread_mutex_t	write_mutex;
+	pthread_cond_t	cond_coders[250];
+	pthread_mutex_t	end_mutex;
+	t_coder			coders[250];
+}	t_env;
+
+struct s_coder
+{
+	int				id;
+	int				compiles_done;
+	long long		last_compile_start;
+	pthread_mutex_t	state_mutex;
+	t_env			*env;
+};
+
+int		check_arg_errors(int argc, char **argv);
 void	print_error(int n);
+int 	init_env(t_env *env, char **argv);
 
 #endif
