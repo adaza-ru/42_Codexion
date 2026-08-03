@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/07/20 02:23:11 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/02 01:58:46 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,16 @@
 #  define DEATH_CLR      ""
 # endif
 
-typedef struct s_coder	t_coder;
+typedef struct s_env	t_env;
+
+typedef struct s_coder
+{
+	int				id;
+	int				compiles_done;
+	long long		last_compile_start;
+	pthread_mutex_t	state_mutex;
+	t_env			*env;
+}	t_coder;
 
 typedef struct s_env
 {
@@ -61,19 +70,14 @@ typedef struct s_env
 	pthread_cond_t	cond_coders[250];
 	pthread_mutex_t	end_mutex;
 	t_coder			coders[250];
+	pthread_t		coder_threads[250];
+	pthread_t		watcher_thread;
 }	t_env;
-
-struct s_coder
-{
-	int				id;
-	int				compiles_done;
-	long long		last_compile_start;
-	pthread_mutex_t	state_mutex;
-	t_env			*env;
-};
 
 int		check_arg_errors(int argc, char **argv);
 void	print_error(int n);
-int 	init_env(t_env *env, char **argv);
+int		init_env(t_env *env, char **argv);
+void	clean_up_everything(t_env *env);
+int		start_simulation(t_env *env);
 
 #endif
