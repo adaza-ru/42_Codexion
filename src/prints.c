@@ -1,32 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_errors_and_clean.c                           :+:      :+:    :+:   */
+/*   prints.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/01 20:51:50 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/02 01:41:15 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/04 01:40:39 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_codexion.h"
-
-void	clean_up_everything(t_env *env)
-{
-	int	i;
-
-	i = 0;
-	pthread_mutex_destroy(&env->arbitrator_mutex);
-	pthread_mutex_destroy(&env->write_mutex);
-	pthread_mutex_destroy(&env->end_mutex);
-	while (i < env->num_coders)
-	{
-		pthread_mutex_destroy(&env->coders[i].state_mutex);
-		pthread_cond_destroy(&env->cond_coders[i]);
-		i++;
-	}
-}
 
 static char	*get_init_error_message(int err_mark)
 {
@@ -80,4 +64,20 @@ void	print_error(int err_mark)
 	if (err_mark > 10)
 		err_messg = get_init_error_message(err_mark - 11);
 	fprintf(stderr, DEATH_CLR "ERROR: %s" RESET, err_messg);
+}
+
+void	print_status(t_coder *coder, char *color, char *status)
+{
+	size_t	timestamp;
+
+	pthread_mutex_lock(&coder->env->write_mutex);
+	pthread_mutex_lock(&coder->env->end_mutex);
+	if (!coder->env->simulation_end)
+	{
+		timestamp = get_current_time() - coder->env->start_time;
+		fprintf(stdout, "%s%zu %d %s%s\n",
+			color, timestamp, coder->id + 1, status, RESET);
+	}
+	pthread_mutex_unlock(&coder->env->end_mutex);
+	pthread_mutex_unlock(&coder->env->write_mutex);
 }

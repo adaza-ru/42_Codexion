@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 20:25:49 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/02 02:03:31 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/04 01:57:48 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,18 +83,19 @@ static int	init_env_mutexes(t_env *env)
 static void	init_env_data(t_env *env, char **argv)
 {
 	env->num_coders = atoi(argv[1]);
-	env->time_to_burnout = atoi(argv[2]) * 1000;
-	env->time_to_compile = atoi(argv[3]) * 1000;
-	env->time_to_debug = atoi(argv[4]) * 1000;
-	env->time_to_refactor = atoi(argv[5]) * 1000;
+	env->time_to_burnout = (size_t)atoi(argv[2]);
+	env->time_to_compile = (size_t)atoi(argv[3]);
+	env->time_to_debug = (size_t)atoi(argv[4]);
+	env->time_to_refactor = (size_t)atoi(argv[5]);
 	env->num_compiles_required = atoi(argv[6]);
-	env->dongle_cooldown = atoi(argv[7]) * 1000;
+	env->dongle_cooldown = (size_t)atoi(argv[7]);
 	if (strcmp(argv[8], "edf") == 0)
 		env->scheduler = 1;
 	else
 		env->scheduler = 0;
 	env->queue_size = 0;
 	env->simulation_end = 0;
+	env->start_time = get_current_time();
 }
 
 int	init_env(t_env *env, char **argv)

@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/08/02 01:59:17 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/08/04 01:28:39 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,10 +19,13 @@ SRCS_DIR    = src
 OBJS_DIR    = obj
 
 SRCS        = main.c\
+			time.c\
 			arg_errors.c\
-			print_errors_and_clean.c\
+			prints.c\
+			clean_up.c\
 			init_env.c\
-			start_simulation.c
+			start_simulation.c\
+			watcher.c\
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 
