@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 02:30:11 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/05 14:57:49 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 17:29:31 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	can_take_dongles(t_env *env, t_coder *coder)
 
 	left = coder->id;
 	right = (coder->id + 1) % env->num_coders;
-	if (left ==right)
+	if (left == right)
 		return (0);
 	if (env->heap_dongles[left] != 0 || env->heap_dongles[right] != 0)
 		return (0);

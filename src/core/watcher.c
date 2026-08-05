@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 23:51:55 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/05 15:10:05 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 17:30:32 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 static void	burnout_stop(t_env *env, t_coder *coder)
 {
 	size_t	timestamp;
-	int i;
-	
+	int		i;
+
 	i = 0;
 	pthread_mutex_lock(&env->write_mutex);
 	pthread_mutex_lock(&env->end_mutex);
@@ -38,9 +38,9 @@ static void	burnout_stop(t_env *env, t_coder *coder)
 static void	simulation_achieved_stop(t_env *env)
 {
 	size_t	timestamp;
-	int i;
-	
-	i = 0;	
+	int		i;
+
+	i = 0;
 	pthread_mutex_lock(&env->write_mutex);
 	pthread_mutex_lock(&env->end_mutex);
 	env->simulation_end = 1;
@@ -60,18 +60,21 @@ static void	simulation_achieved_stop(t_env *env)
 
 static int	check_coder(t_env *env, t_coder *coder, int *all_done)
 {
+	size_t	last_start;
+	int		done;
+
 	pthread_mutex_lock(&coder->state_mutex);
-	if ((get_current_time() - coder->last_compile_start)
+	last_start = coder->last_compile_start;
+	done = coder->compiles_done;
+	pthread_mutex_unlock(&coder->state_mutex);
+	if ((get_current_time() - last_start)
 		> env->time_to_burnout)
 	{
 		burnout_stop(env, coder);
-		pthread_mutex_unlock(&coder->state_mutex);
 		return (1);
 	}
-	if (env->num_compiles_required <= 0
-		|| coder->compiles_done < env->num_compiles_required)
+	if (done < env->num_compiles_required)
 		*all_done = 0;
-	pthread_mutex_unlock(&coder->state_mutex);
 	return (0);
 }
 
