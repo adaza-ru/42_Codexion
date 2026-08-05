@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 23:51:55 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 01:54:47 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 15:10:05 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 static void	burnout_stop(t_env *env, t_coder *coder)
 {
 	size_t	timestamp;
-
+	int i;
+	
+	i = 0;
 	pthread_mutex_lock(&env->write_mutex);
 	pthread_mutex_lock(&env->end_mutex);
 	env->simulation_end = 1;
@@ -24,12 +26,21 @@ static void	burnout_stop(t_env *env, t_coder *coder)
 		DEATH_CLR, timestamp, coder->id + 1, RESET);
 	pthread_mutex_unlock(&env->end_mutex);
 	pthread_mutex_unlock(&env->write_mutex);
+	pthread_mutex_lock(&env->arbitrator_mutex);
+	while (i < env->num_coders)
+	{
+		pthread_cond_broadcast(&env->cond_coders[i]);
+		i++;
+	}
+	pthread_mutex_unlock(&env->arbitrator_mutex);
 }
 
 static void	simulation_achieved_stop(t_env *env)
 {
 	size_t	timestamp;
-
+	int i;
+	
+	i = 0;	
 	pthread_mutex_lock(&env->write_mutex);
 	pthread_mutex_lock(&env->end_mutex);
 	env->simulation_end = 1;
@@ -38,6 +49,13 @@ static void	simulation_achieved_stop(t_env *env)
 		CLR_SUCCESS, timestamp, RESET);
 	pthread_mutex_unlock(&env->end_mutex);
 	pthread_mutex_unlock(&env->write_mutex);
+	pthread_mutex_lock(&env->arbitrator_mutex);
+	while (i < env->num_coders)
+	{
+		pthread_cond_broadcast(&env->cond_coders[i]);
+		i++;
+	}
+	pthread_mutex_unlock(&env->arbitrator_mutex);
 }
 
 static int	check_coder(t_env *env, t_coder *coder, int *all_done)

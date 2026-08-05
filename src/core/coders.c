@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/04 02:00:05 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/05 02:28:42 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 14:58:12 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,11 @@ void	*coder_routine(void *arg)
 	pthread_mutex_unlock(&coder->state_mutex);
 	while (!check_simulation_end(env))
 	{
-		// take_dongles(coder);
+		take_dongles(coder);
+		if (check_simulation_end(env))
+			break ;
 		do_compile(coder);
-		// release_dongles(coder);
+		release_dongles(coder);
 		do_debug(coder);
 		do_refactor(coder);
 	}

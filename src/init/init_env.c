@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 20:25:49 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 01:57:48 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 14:52:14 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int	init_env_conders(t_env *env)
 	{
 		env->coders[i].id = i;
 		env->coders[i].compiles_done = 0;
-		env->coders[i].last_compile_start = 0;
+		env->coders[i].last_compile_start = env->start_time;
 		env->coders[i].env = env;
 		if (pthread_mutex_init(&env->coders[i].state_mutex, NULL) != 0)
 		{

@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/02 01:42:39 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 02:20:44 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 14:58:41 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,15 @@ int	start_simulation(t_env *env)
 {
 	int	i;
 
+	env->start_time = get_current_time();
+	i = 0;
+	while (i < env->num_coders)
+	{
+		pthread_mutex_lock(&env->coders[i].state_mutex);
+		env->coders[i].last_compile_start = env->start_time;
+		pthread_mutex_unlock(&env->coders[i].state_mutex);
+		i++;
+	}
 	if (pthread_create(&env->watcher_thread, NULL, watcher_routine, env) != 0)
 		return (16);
 	i = 0;

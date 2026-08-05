@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/08/05 02:29:06 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/08/05 15:14:59 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ SRCS        = main.c\
 			core/watcher.c\
 			core/coders.c\
 			core/dongles.c\
+			utils/queue.c
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 
@@ -138,7 +139,7 @@ logtest: $(NAME)
 	@echo "      2/3. RUNNING HELGRIND TEST         "
 	@echo "========================================="
 	@echo "Executing Helgrind, logging to '$(LOG_HEL)'..."
-	-@valgrind --tool=helgrind --log-file=$(LOG_HEL) ./$(NAME) 5 800 200 200 200 3 100 edf > /dev/null 2>&1
+	-@valgrind --tool=helgrind --history-level=full --log-file=$(LOG_HEL) ./$(NAME) 5 800 200 200 200 3 100 edf > /dev/null 2>&1
 	@if grep -E "ERROR SUMMARY: [1-9]|possible data race|lock order violation" $(LOG_HEL) > /dev/null 2>&1; then \
 		echo "\033[0;31m[HELGRIND ERROR DETECTED] Check $(LOG_HEL)\033[0m"; \
 	else \
