@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 18:26:06 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/02 01:58:41 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/04 23:44:31 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	main(int argc, char **argv)
 	int		error_mark;
 	t_env	env;
 
+	memset(&env, 0, sizeof(t_env));
 	error_mark = check_arg_errors(argc, argv);
 	if (!error_mark)
 		error_mark = init_env(&env, argv);

@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 02:13:03 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 02:31:31 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,6 @@ void	*watcher_routine(void *arg);
 size_t	get_current_time(void);
 void	print_status(t_coder *coder, char *color, char *status);
 void	*coder_routine(void *arg);
-void	do_compile(t_coder *coder);
-void	do_debug(t_coder *coder);
-void	do_refactor(t_coder *coder);
+void	take_dongles(t_coder *coder);
 
 #endif

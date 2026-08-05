@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/08/04 01:28:39 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/08/05 02:29:06 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,13 +19,15 @@ SRCS_DIR    = src
 OBJS_DIR    = obj
 
 SRCS        = main.c\
-			time.c\
-			arg_errors.c\
-			prints.c\
-			clean_up.c\
-			init_env.c\
-			start_simulation.c\
-			watcher.c\
+			utils/time.c\
+			utils/prints.c\
+			utils/clean_up.c\
+			init/arg_errors.c\
+			init/init_env.c\
+			init/start_simulation.c\
+			core/watcher.c\
+			core/coders.c\
+			core/dongles.c\
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 
@@ -93,7 +95,7 @@ termtest: $(NAME)
 	-@./$(NAME) 4 400 200 100 100 5 999999999999999 fifo
 
 	@echo "\n[ERROR 6] Too many programmers"
-	-@./$(NAME) 400 400 -200 100 100 5 50 edf
+	-@./$(NAME) 400 400 200 100 100 5 50 edf
 
 	@echo "\n[ERROR 7] Fail creating a thread"
 	-@bash -c "ulimit -u 20 && ./$(NAME) 250 800 200 200 200 3 100 edf"
@@ -124,7 +126,7 @@ logtest: $(NAME)
 	-@./$(NAME) 4 400 200 100 100 5 999999999999999 fifo >> $(LOG_ERR) 2>&1
 
 	@echo "\n[ERROR 6] Too many programmers" >> $(LOG_ERR) 2>&1
-	-@./$(NAME) 400 400 -200 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	-@./$(NAME) 400 400 200 100 100 5 50 edf >> $(LOG_ERR) 2>&1
 
 	@echo "\n[ERROR 7] Fail creating a thread" >> $(LOG_ERR) 2>&1
 	-@bash -c "ulimit -u 20 && ./$(NAME) 250 800 200 200 200 3 100 edf" >> $(LOG_ERR) 2>&1

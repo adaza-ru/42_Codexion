@@ -6,11 +6,45 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/04 02:00:05 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 02:12:44 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 02:28:42 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_codexion.h"
+
+static void	do_compile(t_coder *coder)
+{
+	pthread_mutex_lock(&coder->state_mutex);
+	coder->last_compile_start = get_current_time();
+	pthread_mutex_unlock(&coder->state_mutex);
+	print_status(coder, COMPILE_CLR, "is compiling");
+	codex_usleep(coder->env->time_to_compile, coder->env);
+	pthread_mutex_lock(&coder->state_mutex);
+	coder->compiles_done++;
+	pthread_mutex_unlock(&coder->state_mutex);
+}
+
+static void	do_debug(t_coder *coder)
+{
+	print_status(coder, DEBUG_CLR, "is debugging");
+	codex_usleep(coder->env->time_to_debug, coder->env);
+}
+
+static void	do_refactor(t_coder *coder)
+{
+	print_status(coder, REFACTOR_CLR, "is refactoring");
+	codex_usleep(coder->env->time_to_refactor, coder->env);
+}
+
+static int	check_simulation_end(t_env *env)
+{
+	int	is_end;
+
+	pthread_mutex_lock(&env->end_mutex);
+	is_end = env->simulation_end;
+	pthread_mutex_unlock(&env->end_mutex);
+	return (is_end);
+}
 
 void	*coder_routine(void *arg)
 {
@@ -19,35 +53,15 @@ void	*coder_routine(void *arg)
 
 	coder = (t_coder *)arg;
 	env = coder->env;
-
-	// Inicializamos su last_compile_start al tiempo de inicio de la simulación
 	pthread_mutex_lock(&coder->state_mutex);
 	coder->last_compile_start = env->start_time;
 	pthread_mutex_unlock(&coder->state_mutex);
-
-	while (1)
+	while (!check_simulation_end(env))
 	{
-		pthread_mutex_lock(&env->end_mutex);
-		if (env->simulation_end)
-		{
-			pthread_mutex_unlock(&env->end_mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&env->end_mutex);
-
-		// 1. Pedir dongles al Árbitro (aquí la cola FIFO/EDF tomará el control)
 		// take_dongles(coder);
-
-		// 2. Compilar
 		do_compile(coder);
-
-		// 3. Devolver dongles al Árbitro
 		// release_dongles(coder);
-
-		// 4. Debuggear
 		do_debug(coder);
-
-		// 5. Refactorizar
 		do_refactor(coder);
 	}
 	return (NULL);

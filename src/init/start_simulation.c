@@ -6,17 +6,11 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/02 01:42:39 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 00:02:13 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/04 02:20:44 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_codexion.h"
-
-static void	*coder_routine(void *arg)
-{
-	(void)arg;
-	return (NULL);
-}
 
 static int	handle_creation_error(t_env *env, int created_count)
 {
