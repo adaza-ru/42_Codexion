@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/01 20:51:50 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/04 01:40:39 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/06 02:49:24 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ static char	*get_arg_error_message(int err_mark)
 	char	*error_messages[9];
 
 	error_messages[0] = "Wrong arguments format. Usage: \"./codexion"
-		"<number_of_coders> <time_to_burnout> <time_to_compile>\n "
-		"<time_to_debug> <time_to_refactor> <number_of_compiles_required>"
+		"<number_of_coders> <time_to_burnout>\n<time_to_compile>"
+		"<time_to_debug> <time_to_refactor>\n<number_of_compiles_required>"
 		" <dongle_cooldown> <scheduler>\"\n";
 	error_messages[1] = "Wrong number of coders. Ir must be a positive"
 		" integer between 1 and 250.\n";
@@ -50,7 +50,8 @@ static char	*get_arg_error_message(int err_mark)
 		"positive non-zero integer.\n";
 	error_messages[7] = "Wrong dongle cooldown. It must be a "
 		"positive non-zero integer.\n";
-	error_messages[8] = "Wrong scheduler. It must \"edf\" or \"fifo\".\n";
+	error_messages[8] = "Wrong scheduler. It must be \"edf\" or \"fifo\""
+		"(Case Sensitive).\n";
 	return (error_messages[err_mark]);
 }
 
