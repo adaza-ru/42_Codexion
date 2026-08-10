@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 23:51:55 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/05 17:30:32 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/10 02:08:37 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static int	check_coder(t_env *env, t_coder *coder, int *all_done)
 	return (0);
 }
 
-static int	check_all_coders(t_env *env)
+int	check_all_coders(t_env *env)
 {
 	int	i;
 	int	all_done;

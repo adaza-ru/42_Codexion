@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/08/06 02:08:09 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/08/10 01:43:41 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS        = main.c\
 			init/start_simulation.c\
 			core/watcher.c\
 			core/coders.c\
+			core/coder_actions.c\
 			core/dongles.c\
 			utils/queue.c
 
