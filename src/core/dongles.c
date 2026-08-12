@@ -6,21 +6,11 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 02:30:11 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/09 21:31:45 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/12 19:06:17 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_codexion.h"
-
-static int	check_sim_end(t_env *env)
-{
-	int	status;
-
-	pthread_mutex_lock(&env->end_mutex);
-	status = env->simulation_end;
-	pthread_mutex_unlock(&env->end_mutex);
-	return (status);
-}
 
 static int	is_doomed(t_coder *coder, int ahead)
 {
@@ -75,20 +65,22 @@ static int	can_take_dongles(t_coder *coder)
 	return (1);
 }
 
-void	take_dongles(t_coder *coder)
+int	take_dongles(t_coder *coder)
 {
 	t_env	*env;
 	int		left;
 	int		right;
 
 	env = coder->env;
+	if (check_simulation_end(env))
+		return (0);
 	left = coder->id;
 	right = (coder->id + 1) % env->num_coders;
 	pthread_mutex_lock(&env->arbitrator_mutex);
 	enqueue_coder(env, coder);
-	while (!can_take_dongles(coder) && !check_sim_end(env))
+	while (!can_take_dongles(coder) && !check_simulation_end(env))
 		pthread_cond_wait(&env->cond_coders[coder->id], &env->arbitrator_mutex);
-	if (!check_sim_end(env))
+	if (!check_simulation_end(env))
 	{
 		env->heap_dongles[left] = 1;
 		env->heap_dongles[right] = 1;
@@ -97,6 +89,7 @@ void	take_dongles(t_coder *coder)
 	else
 		dequeue_coder(env, coder);
 	pthread_mutex_unlock(&env->arbitrator_mutex);
+	return (1);
 }
 
 void	release_dongles(t_coder *coder)

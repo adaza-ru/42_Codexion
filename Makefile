@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/08/10 01:43:41 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/08/12 19:05:31 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,15 +21,15 @@ OBJS_DIR    = obj
 SRCS        = main.c\
 			utils/time.c\
 			utils/prints.c\
-			utils/clean_up.c\
+			utils/check_and_clean.c\
+			utils/queue.c\
 			init/arg_errors.c\
 			init/init_env.c\
 			init/start_simulation.c\
 			core/watcher.c\
 			core/coders.c\
-			core/coder_actions.c\
 			core/dongles.c\
-			utils/queue.c
+
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 

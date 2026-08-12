@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/08/10 01:54:10 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/12 19:01:19 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,13 +88,9 @@ size_t	get_current_time(void);
 void	print_status(t_coder *coder, char *color, char *status);
 void	*coder_routine(void *arg);
 int		check_simulation_end(t_env *env);
-void	take_dongles(t_coder *coder);
+int		take_dongles(t_coder *coder);
 void	release_dongles(t_coder *coder);
 void	enqueue_coder(t_env *env, t_coder *coder);
 void	dequeue_coder(t_env *env, t_coder *coder);
-int		do_compile(t_coder *coder, t_env *env);
-int		do_debug(t_coder *coder, t_env *env);
-int		do_refactor(t_coder *coder, t_env *env);
-int		check_all_coders(t_env *env);
 
 #endif
