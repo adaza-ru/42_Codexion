@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/01 20:51:50 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:05:15 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/06 02:49:24 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ static char	*get_init_error_message(int err_mark)
 	error_messages[4] = "Unexpected error initializing coders state mutex\n";
 	error_messages[5] = "Unexpected error creating the watcher p_thread\n";
 	error_messages[6] = "Unexpected error creating the coders p_threads\n";
+	error_messages[7] = "\n";
+	error_messages[8] = "\n";
 	return (error_messages[err_mark]);
 }
 

@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 18:26:06 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:41:09 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/05 19:24:05 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@ int	main(int argc, char **argv)
 
 	error_mark = check_arg_errors(argc, argv);
 	if (!error_mark)
-	{
 		memset(&env, 0, sizeof(t_env));
 		error_mark = init_env(&env, argv);
-	}
 	if (!error_mark)
 		error_mark = start_simulation(&env);
 	if (error_mark)

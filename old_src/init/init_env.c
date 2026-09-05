@@ -6,13 +6,13 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 20:25:49 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:02:13 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/05 19:29:25 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "h_codexion.h"
 
-static int	init_env_coders(t_env *env)
+static int	init_env_conders(t_env *env)
 {
 	int	i;
 
@@ -56,9 +56,7 @@ static int	init_env_conds(t_env *env)
 				pthread_cond_destroy(&env->cond_coders[i]);
 			return (14);
 		}
-		env->dongle_taken[i] = 0;
-		env->dongle_free_at[i] = 0;
-		env->arrival_seq[i] = 0;
+		env->heap_dongles[i] = 0;
 		i++;
 	}
 	return (0);
@@ -96,7 +94,6 @@ static void	init_env_data(t_env *env, char **argv)
 	else
 		env->scheduler = 0;
 	env->heap_size = 0;
-	env->next_seq = 0;
 	env->simulation_end = 0;
 	env->start_time = get_current_time();
 }
@@ -112,6 +109,6 @@ int	init_env(t_env *env, char **argv)
 	err_mark = init_env_conds(env);
 	if (err_mark)
 		return (err_mark);
-	err_mark = init_env_coders(env);
+	err_mark = init_env_conders(env);
 	return (err_mark);
 }

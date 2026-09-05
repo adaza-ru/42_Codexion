@@ -6,7 +6,7 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/08/12 19:05:31 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/09/05 20:42:35 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,14 +22,9 @@ SRCS        = main.c\
 			utils/time.c\
 			utils/prints.c\
 			utils/check_and_clean.c\
-			utils/queue.c\
 			init/arg_errors.c\
 			init/init_env.c\
 			init/start_simulation.c\
-			core/watcher.c\
-			core/coders.c\
-			core/dongles.c\
-
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
 

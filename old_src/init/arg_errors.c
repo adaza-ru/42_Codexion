@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 18:43:11 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 19:55:15 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/05 19:58:14 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 static int	check_atoi_error(char *str, int i)
 {
 	long long	n;
+	int			sign;
 	int			digits;
 
 	n = 0;
+	sign = 1;
 	digits = 0;
 	while (*str == ' ')
 		str++;
@@ -32,6 +34,7 @@ static int	check_atoi_error(char *str, int i)
 	}
 	if (digits == 0 || (*str && *str != ' '))
 		return (1);
+	n *= sign;
 	if (i == 1)
 		return (n < 1 || n > 250);
 	return (n < 1 || n > 2147483647);

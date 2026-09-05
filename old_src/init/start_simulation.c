@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/02 01:42:39 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:41:35 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/08/05 14:58:41 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ static void	join_all_threads(t_env *env)
 {
 	int	i;
 
-	i = 0;
 	pthread_join(env->watcher_thread, NULL);
+	i = 0;
 	while (i < env->num_coders)
 	{
 		pthread_join(env->coder_threads[i], NULL);
@@ -40,8 +40,8 @@ int	start_simulation(t_env *env)
 {
 	int	i;
 
-	i = 0;
 	env->start_time = get_current_time();
+	i = 0;
 	while (i < env->num_coders)
 	{
 		pthread_mutex_lock(&env->coders[i].state_mutex);
