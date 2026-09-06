@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 20:25:49 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:02:13 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/06 01:19:24 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,9 @@ static void	init_env_data(t_env *env, char **argv)
 	env->num_compiles_required = atoi(argv[6]);
 	env->dongle_cooldown = (size_t)atoi(argv[7]);
 	if (strcmp(argv[8], "edf") == 0)
-		env->scheduler = 1;
+		env->scheduler = SCH_EDF;
 	else
-		env->scheduler = 0;
+		env->scheduler = SCH_FIFO;
 	env->heap_size = 0;
 	env->next_seq = 0;
 	env->simulation_end = 0;

@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:23:07 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/06 02:21:04 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,13 @@
 #  define DEATH_CLR      ""
 #  define CLR_SUCCESS    ""
 # endif
- 
+
+typedef enum e_sched
+{
+	SCH_FIFO,
+	SCH_EDF
+}	t_sched;
+
 typedef struct s_env	t_env;
  
 typedef struct s_coder
@@ -90,5 +96,16 @@ void	codex_usleep(size_t milliseconds, t_env *env);
 void	clean_up_everything(t_env *env);
 int		check_simulation_end(t_env *env);
 int		start_simulation(t_env *env);
+void	*watcher_routine(void *arg);
+int		check_all_coders(t_env *env);
+void	*coder_routine(void *arg);
+void	enqueue_coder(t_env *env, t_coder *coder);
+void	dequeue_coder(t_env *env, t_coder *coder);
+size_t	get_coder_deadline(t_env *env, int coder_id);
+void	swap_nodes(int *a, int *b);
+int		has_higher_priority(t_env *env, int coder_a, int coder_b);
+int		take_dongles(t_coder *coder);
+void	release_dongles(t_coder *coder);
+int		can_take_dongles(t_coder *coder);
 
 #endif

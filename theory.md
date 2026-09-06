@@ -157,12 +157,12 @@ El escenario de fallo:
 	5. **CODER** El Coder retoma la CPU y ejecuta pthread_cond_wait(...).
 	6. **CODER:** EL CODER SE QUEDA DORMIDO PARA SIEMPRE.
 
-	Cómo lo soluciona bloquear el arbitrator_mutex:  
+Cómo lo soluciona bloquear el arbitrator_mutex:  
 	Cuando el Watcher hace ``pthread_mutex_lock(&env->arbitrator_mutex)`` antes de hacer el broadcast, se elimina esa ventana ciega:
 	1. **Si el Coder llegó primero:** Ya está de verdad dentro de pthread_cond_wait (lo que significa que ya liberó el mutex y está escuchando la variable de condición). Recibirá la señal del Watcher de forma 100% garantizada.
 	2. Si el Watcher llegó primero: Al tener el mutex agarrado, el Coder no podrá evaluar el while ni intentar dormirse hasta que el Watcher termine, cambie el estado y libere el mutex. Cuando el Coder por fin adquiera el mutex, evaluará simulation_end == 1 y ni siquiera intentará dormirse.
 
-	En resumen
+En resumen:
 	El mutex de la variable de condición no protege a la propia llamada pthread_cond_broadcast; protege el estado que determina si el hilo debe dormirse o no (simulation_end / can_take_dongles).
 	Bloquear arbitrator_mutex en el Watcher garantiza que la modificación del estado y el aviso de despertar ocurran como una única operación atómica para todos los programadores.
 
