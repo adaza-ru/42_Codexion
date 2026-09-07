@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/06 02:21:04 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/06 19:59:00 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,6 @@ void	swap_nodes(int *a, int *b);
 int		has_higher_priority(t_env *env, int coder_a, int coder_b);
 int		take_dongles(t_coder *coder);
 void	release_dongles(t_coder *coder);
-int		can_take_dongles(t_coder *coder);
+int		wait_for_turn(t_env *env, t_coder *coder);
 
 #endif

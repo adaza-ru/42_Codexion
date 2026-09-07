@@ -6,13 +6,13 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/09/06 02:06:50 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/09/06 17:24:19 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME        = codexion
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -I include -g
+CFLAGS      = -Wall -Wextra -Werror -pthread -I include -g
 RM          = rm -rf
 
 SRCS_DIR    = src
@@ -27,278 +27,247 @@ SRCS        = main.c\
 			init/start_simulation.c\
 			thread_routines/watcher.c\
 			thread_routines/coders.c\
-			thread_routines/manipulate_dongles.c\
-			thread_routines/dongles_availability.c\
+			thread_routines/dongles.c\
+			thread_routines/wait.c\
 			heap/heap.c\
 			heap/heap_utils.c\
 
 OBJS        = $(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
-
+ 
 STATE_MAN   = .mandatory
 STATE_COL   = .color
-
-LOG_ERR     = logs/error_tests.log
-LOG_HEL     = logs/helgrind.log
-LOG_TSAN    = logs/tsan.log
-LOG_MEM 	= logs/memcheck.log
-
-.PHONY: all color clean fclean re recolor termtest logtest help
-
+ 
+LOGS_DIR    = logs
+LOG_ERR     = $(LOGS_DIR)/error_tests.log
+LOG_MEM     = $(LOGS_DIR)/memcheck.log
+LOG_HEL     = $(LOGS_DIR)/helgrind.log
+LOG_TSAN    = $(LOGS_DIR)/tsan.log
+LOG_ASAN    = $(LOGS_DIR)/asan.log
+ 
+ARGS_FIFO_BURNOUT = 2 100 300 50 50 5 10 fifo
+ARGS_FIFO_SUCCESS = 3 1000 50 50 50 2 20 fifo
+ARGS_EDF_BURNOUT  = 2 100 300 50 50 5 10 edf
+ARGS_EDF_SUCCESS  = 3 1000 50 50 50 2 20 edf
+ARGS_STRESS       = 250 15000 50 20 20 2 10 edf
+ 
+MEMCHECK    = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
+HELGRIND    = valgrind --tool=helgrind --history-level=full
+ 
+.PHONY: all color clean fclean re recolor help \
+		termtest logtest \
+		logtest-errors logtest-memcheck logtest-helgrind logtest-tsan logtest-asan
+ 
 all: $(STATE_MAN)
-
+ 
 color: $(STATE_COL)
-
+ 
 $(STATE_MAN):
 	@if [ -f $(STATE_COL) ]; then \
 		$(RM) $(OBJS_DIR) $(STATE_COL); \
 	fi
 	@$(MAKE) $(NAME)
 	@touch $(STATE_MAN)
-
+ 
 $(STATE_COL):
 	@if [ -f $(STATE_MAN) ]; then \
 		$(RM) $(OBJS_DIR) $(STATE_MAN); \
 	fi
 	@$(MAKE) $(NAME) CFLAGS="$(CFLAGS) -D CONFIG_COLOR"
 	@touch $(STATE_COL)
-
+ 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
-
+ 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
-
+ 
 clean:
 	$(RM) $(OBJS_DIR) $(STATE_MAN) $(STATE_COL)
-
+ 
 fclean: clean
 	$(RM) $(NAME)
-
+ 
 re: fclean all
-
+ 
 recolor: fclean color
-
+ 
 help:
 	@echo "\033[0;34mUsage: \"./codexion <number_of_coders> <time_to_burnout> <time_to_compile>"
-	@echo "<time_to_compile> <time_to_debug> <time_to_refactor>"
-	@echo "<number_of_compiles_required> <dongle_cooldown> <scheduler>\"\n\033[0m"
-
-termtest: $(NAME)
-	@$(MAKE) recolor CFLAGS="$(CFLAGS)" > /dev/null
-	@echo "Cleaning previous logs..."
-	@$(RM) logs
-	
-	@echo "========================================="
-	@echo "      1/4. RUNNING PARSER/INIT TESTS     "
-	@echo "========================================="
-	
-	@echo "\n[ERROR] Wrong number of arguments"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4
-	
-	@echo "\n[ERROR] Negative arguments"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 -200 100 100 5 50 edf
-	
-	@echo "\n[ERROR] Argument with letters"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100t 5 50 fifo
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) NULL 400 200 100 100 5 50 fifo
-
-	@echo "\n[ERROR] Wrong scheduler: Incorrect string & Uppercase"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100 5 50 incorrecto
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100 5 50 EDF
-	
-	@echo "\n[ERROR] Overflow INT_MAX & Underflow INT_MIN"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100 5 2147483648 fifo
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 -2147483649 100 100 5 50 edf
-
-	@echo "\n[ERROR] Empty argument"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 "" 100 100 5 50 edf
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 "   " 100 100 5 50 edf
-
-	@echo "\n[ERROR] Floats"
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200,5 100 100 5 50 edf
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200.5 100 100 5 50 edf
-
-	@echo "\n[ERROR] Fail creating a thread"
-	-@bash -c "ulimit -u 20 && valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 250 800 200 200 200 3 100 edf"
-
-
-	@echo "\n\n========================================="
-	@echo "      2/4. RUNNING MEMCHECK TESTS        "
-	@echo "========================================="
-	@echo "\n=== [TEST 1] FIFO + Burnout ==="
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 5 600 200 200 200 10 50 fifo
-	@echo "\n=== [TEST 2] FIFO + Success ==="
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 1000 200 200 200 5 50 fifo
-	@echo "\n=== [TEST 3] EDF + Burnout ==="
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 5 600 200 200 200 10 50 edf
-	@echo "\n=== [TEST 4] EDF + Success ==="
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 1000 200 200 200 5 50 edf
-
-
-
-	@echo "\n\n========================================="
-	@echo "      3/4. RUNNING HELGRIND TESTS        "
-	@echo "========================================="
-	@echo "Executing 4 matrix tests with Helgrind (may take a few seconds)..."
-	@echo "\n=== [TEST 1] FIFO + Burnout ==="
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 5 600 200 200 200 10 50 fifo
-	@echo "\n=== [TEST 2] FIFO + Success ==="
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 4 1000 200 200 200 5 50 fifo
-	@echo "\n=== [TEST 3] EDF + Burnout ==="
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 5 600 200 200 200 10 50 edf
-	@echo "\n=== [TEST 4] EDF + Success ==="
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 4 1000 200 200 200 5 50 edf
+	@echo "<time_to_debug> <time_to_refactor>"
+	@echo "<number_of_compiles_required> <dongle_cooldown> <scheduler>\"\033[0m"
 	@echo ""
-
-	@echo "\n\n========================================="
-	@echo "   4/4. RUNNING THREADSANITIZER TESTS    "
+	@echo "  all / color      build (plain / with colored output)"
+	@echo "  termtest         quick, tool-free demo: base behaviour + a stress run"
+	@echo "  logtest          full matrix (memcheck/helgrind/tsan/asan), written to logs/"
+	@echo "  logtest-errors   just the argument-validation matrix, under memcheck"
+	@echo "  logtest-memcheck just the memcheck matrix"
+	@echo "  logtest-helgrind just the helgrind matrix"
+	@echo "  logtest-tsan     just the ThreadSanitizer matrix"
+	@echo "  logtest-asan     just the AddressSanitizer matrix"
+ 
+termtest: recolor
 	@echo "========================================="
-	@echo "Recompiling binary with ThreadSanitizer flags..."
-	@$(MAKE) recolor CFLAGS="$(CFLAGS) -fsanitize=thread" > /dev/null
-	@echo "\n=== [TEST 1] FIFO + Burnout ==="
-	-@./$(NAME) 5 600 200 200 200 10 50 fifo
-	@echo "\n=== [TEST 2] FIFO + Success ==="
-	-@./$(NAME) 4 1000 200 200 200 5 50 fifo
-	@echo "\n=== [TEST 3] EDF + Burnout ==="
-	-@./$(NAME) 5 600 200 200 200 10 50 edf
-	@echo "\n=== [TEST 4] EDF + Success ==="
-	-@./$(NAME) 4 1000 200 200 200 5 50 edf
-	@echo "\nRestoring binary to standard compilation state..."
-	@$(MAKE) recolor > /dev/null
-	
-	@echo "\n========================================"
-	@echo "        ALL TESTS COMPLETED              "
+	@echo "     QUICK DEMO (no tools, raw binary)    "
 	@echo "========================================="
-
-
-
-logtest: $(NAME)
-	@$(MAKE) re CFLAGS="$(CFLAGS)" > /dev/null
-	@echo "Cleaning previous logs..."
-	@$(RM) logs
-	@mkdir logs
-	
+	@echo "\n[ERROR] Wrong number of arguments"
+	-@./$(NAME) 4
+	@echo "\n[ERROR] Invalid scheduler"
+	-@./$(NAME) 4 400 200 100 100 5 50 incorrecto
+	@echo "\n=== FIFO + Burnout ==="
+	-@./$(NAME) $(ARGS_FIFO_BURNOUT)
+	@echo "\n=== FIFO + Success ==="
+	-@./$(NAME) $(ARGS_FIFO_SUCCESS)
+	@echo "\n=== EDF + Burnout ==="
+	-@./$(NAME) $(ARGS_EDF_BURNOUT)
+	@echo "\n=== EDF + Success ==="
+	-@./$(NAME) $(ARGS_EDF_SUCCESS)
+	@echo "\n=== STRESS: 250 coders, edf (can take up to ~15s) ==="
+	-@./$(NAME) $(ARGS_STRESS) | tail -n 5
+	@echo "\n========================================="
+	@echo "          QUICK DEMO COMPLETE             "
 	@echo "========================================="
-	@echo "      1/4. RUNNING PARSER/INIT TESTS     "
+ 
+logtest: logtest-errors logtest-memcheck logtest-helgrind logtest-tsan logtest-asan
+	@echo "\n========================================="
+	@echo "         ALL LOGTEST SUITES DONE          "
+	@echo "  Error tests: $(LOG_ERR)"
+	@echo "  Memcheck:    $(LOG_MEM)"
+	@echo "  Helgrind:    $(LOG_HEL)"
+	@echo "  TSan:        $(LOG_TSAN)"
+	@echo "  ASan:        $(LOG_ASAN)"
 	@echo "========================================="
-	@echo "Writing error cases output to '$(LOG_ERR)'..."
-	
-	@echo "\n[ERROR] Wrong number of arguments" > $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@echo "\n[ERROR] Negative arguments" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 -200 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@echo "\n[ERROR] Argument with letters" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100t 5 50 fifo >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) NULL 400 200 100 100 5 50 fifo >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@echo "\n[ERROR] Wrong scheduler: Incorrect string & Uppercase" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100 5 50 incorrecto >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100 5 50 EDF >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-	
-	@echo "\n[ERROR] Overflow INT_MAX & Underflow INT_MIN" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200 100 100 5 2147483648 fifo >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 -2147483649 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@echo "\n[ERROR] Empty argument" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 "" 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 "   " 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@echo "\n[ERROR] Floats" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200,5 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 400 200.5 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@echo "\n[ERROR] Too many programmers" >> $(LOG_ERR) 2>&1
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 400 400 200 100 100 5 50 edf >> $(LOG_ERR) 2>&1
-	@echo "" >> $(LOG_ERR) 2>&1
-
-	@if grep -E "ERROR SUMMARY: [1-9]|definitely lost:|definitely lost: [1-9]" $(LOG_ERR) > /dev/null 2>&1; then \
-		echo "\033[0;31m[MEMCHECK ERROR DETECTED] Check $(LOG_ERR)\033[0m"; \
+ 
+logtest-errors: re
+	@mkdir -p $(LOGS_DIR)
+	@echo "========================================="
+	@echo "   ARGUMENT VALIDATION (memcheck)         "
+	@echo "========================================="
+	@echo "Logging to $(LOG_ERR)..."
+	@echo "[ERROR] Wrong number of arguments" > $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Negative argument" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 -200 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Argument with letters" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 200 100 100t 5 50 fifo >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) NULL 400 200 100 100 5 50 fifo >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Wrong scheduler: bad string & wrong case" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 200 100 100 5 50 incorrecto >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 200 100 100 5 50 EDF >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Overflow INT_MAX & underflow negative" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 200 100 100 5 2147483648 fifo >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 -2147483649 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Empty / blank argument" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 "" 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 "   " 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Floats" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 200,5 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 4 400 200.5 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Too many coders (>250)" >> $(LOG_ERR)
+	-@$(MEMCHECK) ./$(NAME) 400 400 200 100 100 5 50 edf >> $(LOG_ERR) 2>&1
+	@echo "" >> $(LOG_ERR)
+	@echo "[ERROR] Fail creating a thread (ulimit -u)" >> $(LOG_ERR)
+	-@bash -c "ulimit -u 20 && $(MEMCHECK) ./$(NAME) 250 800 200 200 200 3 100 edf" >> $(LOG_ERR) 2>&1
+	@if grep -qE "ERROR SUMMARY: [1-9]|definitely lost: [1-9]|indirectly lost: [1-9]" $(LOG_ERR); then \
+		echo "\033[0;31m[MEMCHECK ERROR DETECTED] check $(LOG_ERR)\033[0m"; \
 	else \
 		echo "\033[0;32m[MEMCHECK CLEAN]\033[0m"; \
 	fi
-
-
-	@echo "\n\n========================================="
-	@echo "      2/4. RUNNING MEMCHECK TESTS        "
+ 
+logtest-memcheck: re
+	@mkdir -p $(LOGS_DIR)
 	@echo "========================================="
-	@echo "Executing 4 matrix tests with Memcheck, logging to '$(LOG_MEM)'..."
-	@echo "\n=== [TEST 1] FIFO + Burnout ===" > $(LOG_MEM)
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 5 600 200 200 200 10 50 fifo >> $(LOG_MEM) 2>&1
-	@echo "\n=== [TEST 2] FIFO + Success ===" >> $(LOG_MEM)
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 1000 200 200 200 5 50 fifo >> $(LOG_MEM) 2>&1
-	@echo "\n=== [TEST 3] EDF + Burnout ===" >> $(LOG_MEM)
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 5 600 200 200 200 10 50 edf >> $(LOG_MEM) 2>&1
-	@echo "\n=== [TEST 4] EDF + Success ===" >> $(LOG_MEM)
-	-@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 1000 200 200 200 5 50 edf >> $(LOG_MEM) 2>&1
-	@if grep -E "ERROR SUMMARY: [1-9]|definitely lost:|definitely lost: [1-9]" $(LOG_MEM) > /dev/null 2>&1; then \
-		echo "\033[0;31m[MEMCHECK ERROR DETECTED] Check $(LOG_MEM)\033[0m"; \
+	@echo "   BEHAVIOUR MATRIX (memcheck)            "
+	@echo "========================================="
+	@echo "=== FIFO + Burnout ===" > $(LOG_MEM)
+	-@$(MEMCHECK) ./$(NAME) $(ARGS_FIFO_BURNOUT) >> $(LOG_MEM) 2>&1
+	@echo "\n=== FIFO + Success ===" >> $(LOG_MEM)
+	-@$(MEMCHECK) ./$(NAME) $(ARGS_FIFO_SUCCESS) >> $(LOG_MEM) 2>&1
+	@echo "\n=== EDF + Burnout ===" >> $(LOG_MEM)
+	-@$(MEMCHECK) ./$(NAME) $(ARGS_EDF_BURNOUT) >> $(LOG_MEM) 2>&1
+	@echo "\n=== EDF + Success ===" >> $(LOG_MEM)
+	-@$(MEMCHECK) ./$(NAME) $(ARGS_EDF_SUCCESS) >> $(LOG_MEM) 2>&1
+	@if grep -qE "ERROR SUMMARY: [1-9]|definitely lost: [1-9]|indirectly lost: [1-9]" $(LOG_MEM); then \
+		echo "\033[0;31m[MEMCHECK ERROR DETECTED] check $(LOG_MEM)\033[0m"; \
 	else \
 		echo "\033[0;32m[MEMCHECK CLEAN]\033[0m"; \
 	fi
-
-
-	@echo "\n\n========================================="
-	@echo "      3/4. RUNNING HELGRIND TESTS        "
+ 
+logtest-helgrind: re
+	@mkdir -p $(LOGS_DIR)
 	@echo "========================================="
-	@echo "Executing 4 matrix tests with Helgrind (may take a few seconds)..."
-	@echo "Logging to '$(LOG_HEL)'..."
-	@echo "\n=== [TEST 1] FIFO + Burnout ===" > $(LOG_HEL)
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 5 600 200 200 200 10 50 fifo >> $(LOG_HEL) 2>&1
-	@echo "\n=== [TEST 2] FIFO + Success ===" >> $(LOG_HEL)
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 4 1000 200 200 200 5 50 fifo >> $(LOG_HEL) 2>&1
-	@echo "\n=== [TEST 3] EDF + Burnout ===" >> $(LOG_HEL)
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 5 600 200 200 200 10 50 edf >> $(LOG_HEL) 2>&1
-	@echo "\n=== [TEST 4] EDF + Success ===" >> $(LOG_HEL)
-	-@valgrind --tool=helgrind --history-level=full ./$(NAME) 4 1000 200 200 200 5 50 edf >> $(LOG_HEL) 2>&1
-	@if grep -E "ERROR SUMMARY: [1-9]|possible data race|lock order violation" $(LOG_HEL) > /dev/null 2>&1; then \
-		echo "\033[0;31m[HELGRIND ERROR DETECTED] Check $(LOG_HEL)\033[0m"; \
+	@echo "   BEHAVIOUR MATRIX (helgrind)            "
+	@echo "========================================="
+	@echo "This can take a little longer than memcheck..."
+	@echo "=== FIFO + Burnout ===" > $(LOG_HEL)
+	-@$(HELGRIND) ./$(NAME) $(ARGS_FIFO_BURNOUT) >> $(LOG_HEL) 2>&1
+	@echo "\n=== FIFO + Success ===" >> $(LOG_HEL)
+	-@$(HELGRIND) ./$(NAME) $(ARGS_FIFO_SUCCESS) >> $(LOG_HEL) 2>&1
+	@echo "\n=== EDF + Burnout ===" >> $(LOG_HEL)
+	-@$(HELGRIND) ./$(NAME) $(ARGS_EDF_BURNOUT) >> $(LOG_HEL) 2>&1
+	@echo "\n=== EDF + Success ===" >> $(LOG_HEL)
+	-@$(HELGRIND) ./$(NAME) $(ARGS_EDF_SUCCESS) >> $(LOG_HEL) 2>&1
+	@if grep -qiE "ERROR SUMMARY: [1-9]|possible data race|lock order violation" $(LOG_HEL); then \
+		echo "\033[0;31m[HELGRIND ERROR DETECTED] check $(LOG_HEL)\033[0m"; \
 	else \
 		echo "\033[0;32m[HELGRIND CLEAN]\033[0m"; \
 	fi
-	@echo ""
-
-	@echo "\n\n========================================="
-	@echo "   4/4. RUNNING THREADSANITIZER TESTS    "
+ 
+logtest-tsan:
+	@mkdir -p $(LOGS_DIR)
 	@echo "========================================="
-	@echo "Recompiling binary with ThreadSanitizer flags..."
+	@echo "   BEHAVIOUR MATRIX (ThreadSanitizer)     "
+	@echo "========================================="
+	@echo "Recompiling with -fsanitize=thread..."
 	@$(MAKE) re CFLAGS="$(CFLAGS) -fsanitize=thread" > /dev/null
-	@echo "Executing 4 matrix tests with TSan, logging to '$(LOG_TSAN)'..."
-	@echo "\n=== [TEST 1] FIFO + Burnout ===" > $(LOG_TSAN)
-	-@./$(NAME) 5 600 200 200 200 10 50 fifo >> $(LOG_TSAN) 2>&1
-	@echo "\n=== [TEST 2] FIFO + Success ===" >> $(LOG_TSAN)
-	-@./$(NAME) 4 1000 200 200 200 5 50 fifo >> $(LOG_TSAN) 2>&1
-	@echo "\n=== [TEST 3] EDF + Burnout ===" >> $(LOG_TSAN)
-	-@./$(NAME) 5 600 200 200 200 10 50 edf >> $(LOG_TSAN) 2>&1
-	@echo "\n=== [TEST 4] EDF + Success ===" >> $(LOG_TSAN)
-	-@./$(NAME) 4 1000 200 200 200 5 50 edf >> $(LOG_TSAN) 2>&1
-	@if grep -E "WARNING: ThreadSanitizer|data race|deadlock" $(LOG_TSAN) > /dev/null 2>&1; then \
-		echo "\033[0;31m[TSAN ERROR DETECTED] Check $(LOG_TSAN)\033[0m"; \
+	@echo "=== FIFO + Burnout ===" > $(LOG_TSAN)
+	-@./$(NAME) $(ARGS_FIFO_BURNOUT) >> $(LOG_TSAN) 2>&1
+	@echo "\n=== FIFO + Success ===" >> $(LOG_TSAN)
+	-@./$(NAME) $(ARGS_FIFO_SUCCESS) >> $(LOG_TSAN) 2>&1
+	@echo "\n=== EDF + Burnout ===" >> $(LOG_TSAN)
+	-@./$(NAME) $(ARGS_EDF_BURNOUT) >> $(LOG_TSAN) 2>&1
+	@echo "\n=== EDF + Success ===" >> $(LOG_TSAN)
+	-@./$(NAME) $(ARGS_EDF_SUCCESS) >> $(LOG_TSAN) 2>&1
+	@if grep -q "WARNING: ThreadSanitizer" $(LOG_TSAN); then \
+		echo "\033[0;31m[TSAN ERROR DETECTED] check $(LOG_TSAN)\033[0m"; \
 	else \
 		echo "\033[0;32m[TSAN CLEAN]\033[0m"; \
 	fi
-	@echo "\nRestoring binary to standard compilation state..."
-	@$(MAKE) recolor > /dev/null
-	
-	@echo "\n========================================="
-	@echo "        ALL TESTS COMPLETED              "
-	@echo " Logs saved in:"
-	@echo "   - Error Tests:    $(LOG_ERR)"
-	@echo "   - Memcheck Tests: $(LOG_MEM)"
-	@echo "   - Helgrind:       $(LOG_HEL)"
-	@echo "   - TSan:           $(LOG_TSAN)"
+	@echo "Restoring standard build..."
+	@$(MAKE) re > /dev/null
+ 
+logtest-asan:
+	@mkdir -p $(LOGS_DIR)
 	@echo "========================================="
+	@echo "   BEHAVIOUR MATRIX (AddressSanitizer)    "
+	@echo "========================================="
+	@echo "Recompiling with -fsanitize=address..."
+	@$(MAKE) re CFLAGS="$(CFLAGS) -fsanitize=address" > /dev/null
+	@echo "=== FIFO + Burnout ===" > $(LOG_ASAN)
+	-@./$(NAME) $(ARGS_FIFO_BURNOUT) >> $(LOG_ASAN) 2>&1
+	@echo "\n=== FIFO + Success ===" >> $(LOG_ASAN)
+	-@./$(NAME) $(ARGS_FIFO_SUCCESS) >> $(LOG_ASAN) 2>&1
+	@echo "\n=== EDF + Burnout ===" >> $(LOG_ASAN)
+	-@./$(NAME) $(ARGS_EDF_BURNOUT) >> $(LOG_ASAN) 2>&1
+	@echo "\n=== EDF + Success ===" >> $(LOG_ASAN)
+	-@./$(NAME) $(ARGS_EDF_SUCCESS) >> $(LOG_ASAN) 2>&1
+	@if grep -qE "ERROR: AddressSanitizer|ERROR: LeakSanitizer" $(LOG_ASAN); then \
+		echo "\033[0;31m[ASAN ERROR DETECTED] check $(LOG_ASAN)\033[0m"; \
+	else \
+		echo "\033[0;32m[ASAN CLEAN]\033[0m"; \
+	fi
+	@echo "Restoring standard build..."
+	@$(MAKE) re > /dev/null
+ 
