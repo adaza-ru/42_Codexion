@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 02:30:11 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/06 02:22:02 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/09 01:18:00 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,33 @@ int	has_higher_priority(t_env *env, int coder_a, int coder_b)
 		return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
 	deadline_a = get_coder_deadline(env, coder_a);
 	deadline_b = get_coder_deadline(env, coder_b);
-	if (deadline_a == deadline_b)
-		return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
+//	if (deadline_a == deadline_b)
+//		return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
 	return (deadline_a < deadline_b);
 }
+
+/*
+int	has_higher_priority(t_env *env, int coder_a, int coder_b)
+{
+    size_t	deadline_a;
+    size_t	deadline_b;
+    int		compiles_a;
+    int		compiles_b;
+
+    if (env->scheduler == SCH_FIFO)
+        return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
+    deadline_a = get_coder_deadline(env, coder_a);
+    deadline_b = get_coder_deadline(env, coder_b);
+    if (deadline_a != deadline_b)
+        return (deadline_a < deadline_b);
+    pthread_mutex_lock(&env->coders[coder_a].state_mutex);
+    compiles_a = env->coders[coder_a].compiles_done;
+    pthread_mutex_unlock(&env->coders[coder_a].state_mutex);
+    pthread_mutex_lock(&env->coders[coder_b].state_mutex);
+    compiles_b = env->coders[coder_b].compiles_done;
+    pthread_mutex_unlock(&env->coders[coder_b].state_mutex);
+    if (compiles_a != compiles_b)
+        return (compiles_a < compiles_b);
+    return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
+}
+*/

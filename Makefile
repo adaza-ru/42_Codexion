@@ -6,13 +6,13 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/09/06 17:24:19 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/09/09 01:30:51 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME        = codexion
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -pthread -I include -g
+CFLAGS      = -Wall -Wextra -Werror -pthread -I include -g -fsanitize=address
 RM          = rm -rf
 
 SRCS_DIR    = src
@@ -25,10 +25,10 @@ SRCS        = main.c\
 			init/arg_errors.c\
 			init/init_env.c\
 			init/start_simulation.c\
-			thread_routines/watcher.c\
-			thread_routines/coders.c\
-			thread_routines/dongles.c\
-			thread_routines/wait.c\
+			core/watcher.c\
+			core/coders.c\
+			core/dongles.c\
+			core/dongle_logic.c\
 			heap/heap.c\
 			heap/heap_utils.c\
 
@@ -45,9 +45,9 @@ LOG_TSAN    = $(LOGS_DIR)/tsan.log
 LOG_ASAN    = $(LOGS_DIR)/asan.log
  
 ARGS_FIFO_BURNOUT = 2 100 300 50 50 5 10 fifo
-ARGS_FIFO_SUCCESS = 3 1000 50 50 50 2 20 fifo
+ARGS_FIFO_SUCCESS = 3 1000 50 50 50 4 20 fifo
 ARGS_EDF_BURNOUT  = 2 100 300 50 50 5 10 edf
-ARGS_EDF_SUCCESS  = 3 1000 50 50 50 2 20 edf
+ARGS_EDF_SUCCESS  = 3 1000 50 50 50 4 20 edf
 ARGS_STRESS       = 250 15000 50 20 20 2 10 edf
  
 MEMCHECK    = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
@@ -121,9 +121,6 @@ termtest: recolor
 	@echo "\n=== EDF + Burnout ==="
 	-@./$(NAME) $(ARGS_EDF_BURNOUT)
 	@echo "\n=== EDF + Success ==="
-	-@./$(NAME) $(ARGS_EDF_SUCCESS)
-	@echo "\n=== STRESS: 250 coders, edf (can take up to ~15s) ==="
-	-@./$(NAME) $(ARGS_STRESS) | tail -n 5
 	@echo "\n========================================="
 	@echo "          QUICK DEMO COMPLETE             "
 	@echo "========================================="

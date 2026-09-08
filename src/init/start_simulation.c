@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/02 01:42:39 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/05 20:41:35 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/09 01:39:16 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,19 @@
 
 static int	handle_creation_error(t_env *env, int created_count)
 {
+	int	i;
+ 
 	pthread_mutex_lock(&env->end_mutex);
 	env->simulation_end = 1;
 	pthread_mutex_unlock(&env->end_mutex);
+	pthread_mutex_lock(&env->arbitrator_mutex);
+	i = 0;
+	while (i < env->num_coders)
+	{
+		pthread_cond_broadcast(&env->cond_coders[i]);
+		i++;
+	}
+	pthread_mutex_unlock(&env->arbitrator_mutex);
 	pthread_join(env->watcher_thread, NULL);
 	while (--created_count >= 0)
 		pthread_join(env->coder_threads[created_count], NULL);
