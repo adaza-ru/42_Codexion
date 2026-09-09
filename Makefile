@@ -230,13 +230,13 @@ logtest-tsan:
 	@echo "Recompiling with -fsanitize=thread..."
 	@$(MAKE) re CFLAGS="$(CFLAGS) -fsanitize=thread" > /dev/null
 	@echo "=== FIFO + Burnout ===" > $(LOG_TSAN)
-	-@./$(NAME) $(ARGS_FIFO_BURNOUT) >> $(LOG_TSAN) 2>&1
+	-@setarch -R ./$(NAME) $(ARGS_FIFO_BURNOUT) >> $(LOG_TSAN) 2>&1
 	@echo "\n=== FIFO + Success ===" >> $(LOG_TSAN)
-	-@./$(NAME) $(ARGS_FIFO_SUCCESS) >> $(LOG_TSAN) 2>&1
+	-@setarch -R ./$(NAME) $(ARGS_FIFO_SUCCESS) >> $(LOG_TSAN) 2>&1
 	@echo "\n=== EDF + Burnout ===" >> $(LOG_TSAN)
-	-@./$(NAME) $(ARGS_EDF_BURNOUT) >> $(LOG_TSAN) 2>&1
+	-@setarch -R ./$(NAME) $(ARGS_EDF_BURNOUT) >> $(LOG_TSAN) 2>&1
 	@echo "\n=== EDF + Success ===" >> $(LOG_TSAN)
-	-@./$(NAME) $(ARGS_EDF_SUCCESS) >> $(LOG_TSAN) 2>&1
+	-@setarch -R ./$(NAME) $(ARGS_EDF_SUCCESS) >> $(LOG_TSAN) 2>&1
 	@if grep -q "WARNING: ThreadSanitizer" $(LOG_TSAN); then \
 		echo "\033[0;31m[TSAN ERROR DETECTED] check $(LOG_TSAN)\033[0m"; \
 	else \
