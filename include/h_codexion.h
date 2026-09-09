@@ -6,13 +6,13 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/13 23:00:46 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/08 22:05:04 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/09 02:02:54 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef H_CODEXION_H
 # define H_CODEXION_H
- 
+
 # include <pthread.h>
 # include <time.h>
 # include <sys/time.h>
@@ -20,7 +20,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
- 
+
 # ifdef CONFIG_COLOR
 #  define RESET          "\033[0m"
 #  define TIMESTAMP_CLR  "\033[1;90m"
@@ -50,7 +50,7 @@ typedef enum e_sched
 }	t_sched;
 
 typedef struct s_env	t_env;
- 
+
 typedef struct s_coder
 {
 	int				id;
@@ -59,7 +59,7 @@ typedef struct s_coder
 	pthread_mutex_t	state_mutex;
 	t_env			*env;
 }	t_coder;
- 
+
 typedef struct s_env
 {
 	int				num_coders;

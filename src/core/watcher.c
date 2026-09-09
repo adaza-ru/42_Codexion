@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 23:51:55 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/09 01:40:54 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/09 02:01:18 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	check_all_coders(t_env *env)
 void	*watcher_routine(void *arg)
 {
 	t_env	*env;
- 
+
 	env = (t_env *)arg;
 	while (!check_simulation_end(env))
 	{

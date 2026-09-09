@@ -6,13 +6,13 @@
 #    By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/07/13 20:25:55 by adaza-ru          #+#    #+#              #
-#    Updated: 2026/09/09 01:30:51 by adaza-ru         ###   ########.fr        #
+#    Updated: 2026/09/09 01:50:18 by adaza-ru         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME        = codexion
 CC          = cc
-CFLAGS      = -Wall -Wextra -Werror -pthread -I include -g -fsanitize=address
+CFLAGS      = -Wall -Wextra -Werror -pthread -I include -g
 RM          = rm -rf
 
 SRCS_DIR    = src
@@ -48,7 +48,6 @@ ARGS_FIFO_BURNOUT = 2 100 300 50 50 5 10 fifo
 ARGS_FIFO_SUCCESS = 3 1000 50 50 50 4 20 fifo
 ARGS_EDF_BURNOUT  = 2 100 300 50 50 5 10 edf
 ARGS_EDF_SUCCESS  = 3 1000 50 50 50 4 20 edf
-ARGS_STRESS       = 250 15000 50 20 20 2 10 edf
  
 MEMCHECK    = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
 HELGRIND    = valgrind --tool=helgrind --history-level=full
@@ -121,6 +120,7 @@ termtest: recolor
 	@echo "\n=== EDF + Burnout ==="
 	-@./$(NAME) $(ARGS_EDF_BURNOUT)
 	@echo "\n=== EDF + Success ==="
+	-@./$(NAME) $(ARGS_EDF_SUCCESS)
 	@echo "\n========================================="
 	@echo "          QUICK DEMO COMPLETE             "
 	@echo "========================================="
