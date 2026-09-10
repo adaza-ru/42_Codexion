@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/04 02:00:05 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/08 22:25:10 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/10 13:13:59 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	*coder_routine(void *arg)
 	pthread_mutex_lock(&coder->state_mutex);
 	coder->last_compile_start = env->start_time;
 	pthread_mutex_unlock(&coder->state_mutex);
-	coder_loop(env, coder);
+	if (env->num_coders != 1)
+		coder_loop(env, coder);
 	return (NULL);
 }
