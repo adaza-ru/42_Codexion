@@ -144,7 +144,7 @@ The waiting queue is a **binary min-heap** in a fixed-size array, with the order
 ### Build
 
 ```bash
-git clone https://github.com/adaza-ru/42_Codexion.git
+git clone https://github.com/adaza-ru/Codexion.git
 cd codexion
 make          # plain build
 make color    # build with colored output
