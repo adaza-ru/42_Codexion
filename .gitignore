@@ -1,0 +1,6 @@
+*.o
+obj/
+logs/
+.mandatory
+.color
+codexion
