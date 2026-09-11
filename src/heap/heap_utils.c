@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/05 02:30:11 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/09 01:46:18 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/11 16:23:13 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,7 @@ int	has_higher_priority(t_env *env, int coder_a, int coder_b)
 		return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
 	deadline_a = get_coder_deadline(env, coder_a);
 	deadline_b = get_coder_deadline(env, coder_b);
+	if (deadline_a == deadline_b)
+		return (env->arrival_seq[coder_a] < env->arrival_seq[coder_b]);
 	return (deadline_a < deadline_b);
 }

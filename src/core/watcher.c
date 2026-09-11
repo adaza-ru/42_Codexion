@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 23:51:55 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/09 02:01:18 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/11 12:14:29 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int	check_coder(t_env *env, t_coder *coder, int *all_done)
 	last_start = coder->last_compile_start;
 	done = coder->compiles_done;
 	pthread_mutex_unlock(&coder->state_mutex);
-	if ((get_current_time() - last_start) >= env->time_to_burnout)
+	if ((get_current_time() + 1 - last_start) >= env->time_to_burnout)
 	{
 		burnout_stop(env, coder);
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: adaza-ru <adaza-ru@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/04 02:00:05 by adaza-ru          #+#    #+#             */
-/*   Updated: 2026/09/10 13:13:59 by adaza-ru         ###   ########.fr       */
+/*   Updated: 2026/09/11 12:14:59 by adaza-ru         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ static int	do_compile(t_env *env, t_coder *coder)
 		return (0);
 	pthread_mutex_lock(&coder->state_mutex);
 	coder->last_compile_start = get_current_time();
+	coder->last_compile_start += 1;
 	pthread_mutex_unlock(&coder->state_mutex);
 	print_status(coder, COMPILE_CLR, "is compiling");
 	codex_usleep(env->time_to_compile, env);
